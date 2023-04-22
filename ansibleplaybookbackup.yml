@@ -1,0 +1,20 @@
+- name : Configure Docker on EC2 Instances
+  hosts : all
+  become: true
+  connection : ssh
+  tasks : 
+  - name: updating apt
+    command : sudo apt-get update
+
+  - name: Copy file with owner and permission, using symbolic representation
+    ansible.builtin.copy:
+      src: ./insuresele.jar
+      dest: /home/ubuntu/insuresele.jar
+      owner: ubuntu
+      group: ubuntu
+      mode: u=rw,g=r,o=r
+      
+  - name : run selenium jar
+    command : java -jar /home/ubuntu/insuresele.jar
+    become : yes
+    become_user : ubuntu
