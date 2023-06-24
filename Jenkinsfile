@@ -1,11 +1,11 @@
 node {
-	    def mavenHome
-	    def mavenCMD
-	    def docker
-	    def dockerCMD
-	    def tagName
-	    
-	    stage('initialization'){
+    def mavenHome
+    def mavenCMD
+    def docker
+    def dockerCMD
+    def tagName
+    
+    stage('prepare environment'){
 	        echo 'initialize the variables'
 	        mavenHome = tool name: 'myMaven' , type: 'maven'
 	        mavenCMD = "${mavenHome}/bin/mvn"
@@ -13,10 +13,10 @@ node {
 	        dockerCMD = "${docker}/bin/docker"
 	        
 	    }
-	    stage('git code checkout'){
+	     stage('git code checkout'){
 	        
 	        echo 'code checkout'
-	        git ' https://github.com/swapnilsjadhav9519/insurance.git'
+	        git ' https://github.com/Ganeshmunna/Insureme-Project.git'
 	        	
 	    }
 	    stage('maven build'){
@@ -24,23 +24,26 @@ node {
 	        //sh 'mvn clean package'
 	        sh "${mavenCMD} clean package"
 	    }
-	    
-	    
+	    stage('publish html report'){
+	        publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '/var/lib/jenkins/workspace/Devproject/target/surefire-reports', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+	    }
 	    stage ('containerize the application')
         {	        
 	        echo 'build the docker image'
-	        sh "${dockerCMD} build -t swapnil9519/insurance:1.0 ."	        
+	        sh "${dockerCMD} build -t ganeshmunna/insurance:1.0 ."	        
 	    }
 	    stage ('push docker image to dockerhub')
 	    echo 'pushing the docker image to DockerHub'
 	    
-	    withCredentials([string(credentialsId: 'dockpassid', variable: 'dockpass')]) 
-	    {
-	       sh "${dockerCMD} login -u swapnil9519 -p ${dockpass}"
-	       sh "${dockerCMD} push swapnil9519/insurance:1.0"
+	    withCredentials([string(credentialsId: 'docker-password', variable: 'DockerPassword')])
+        {
+        
+         sh "${dockerCMD} login -u ganeshmunna -p ${DockerPassword}"
+	     sh "${dockerCMD} push ganeshmunna/insurance:1.0"
 	    }
 	    stage ('Configure and Deploy to the test-server'){
-	        ansiblePlaybook become: true, disableHostKeyChecking: true, installation: 'myAnsible', inventory: '/etc/ansible/hosts', playbook: 'ansible-playbook.yml'
+	        ansiblePlaybook become: true, disableHostKeyChecking: true, installation: 'MyAnsible', inventory: '/etc/ansible/hosts', playbook: 'ansible-playbook.yml'
 	    }
+	    
 	    
 	}
