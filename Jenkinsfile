@@ -42,7 +42,7 @@ node {
 	     sh "${dockerCMD} push ganeshmunna/insurance:1.0"
 	    }
 	    stage ('Configure and Deploy to the test-server'){
-	        ansiblePlaybook become: true, disableHostKeyChecking: true, installation: 'MyAnsible', inventory: '/etc/ansible/hosts', playbook: 'ansible-playbook.yml'
+	        ansiblePlaybook become: true, credentialsId: 'ansiblekey', disableHostKeyChecking: true, installation: 'MyAnsible', inventory: '/etc/ansible/hosts', playbook: 'ansible-playbook.yml'
 	    }
 	    
 	    
