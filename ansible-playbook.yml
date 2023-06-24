@@ -17,6 +17,6 @@
     become_user : root
 
   - name: Deploy Docker Container
-    command: docker run -itd -p 8084:8081 ganeshmunna/insurance:1.0
+    command: docker run -itd -p 8082:8081 ganeshmunna/insurance:1.0
     
   
